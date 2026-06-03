@@ -7,12 +7,12 @@ from requests.exceptions import RequestException
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from config import NODES, get_node_urls, RESULTS_DIR
-from client.coordinator import Coordinator
-from client.lazy_loader import lazy_load
-from client.eager_loader import eager_load
+from client.lazy_loader import run_lazy_query
+from client.eager_loader import run_eager_query
+import time
 
 app = Flask(__name__, static_folder="web")
-coordinator = Coordinator(get_node_urls(), timeout=5)
+current_latency = 0
 
 
 @app.route("/")
@@ -56,51 +56,58 @@ def api_overview():
 
 @app.route("/api/query/lazy")
 def api_lazy():
-    country = request.args.get("country", "United Kingdom")
-    limit = request.args.get("limit", 50, type=int)
+    global current_latency
+    start = time.perf_counter()
+    result = run_lazy_query(latency_ms=current_latency)
+    total_time_ms = (time.perf_counter() - start) * 1000
 
-    result = lazy_load(coordinator, country=country, limit=limit)
+    # Sort authors alphabetically to ensure order matches between Lazy and Eager
+    sorted_authors = sorted(result.data, key=lambda x: x.get("name", ""))
 
     return jsonify({
-        "authors": result.data[:20],
+        "authors": sorted_authors,
         "stats": {
             "total_authors": len(result.data),
-            "total_time_ms": round(result.total_time_ms, 2),
-            "network_calls": result.network_calls,
-            "total_network_ms": round(result.total_network_ms, 2),
-            "total_serialization_ms": round(result.total_serialization_ms, 2),
-            "failed_nodes": result.failed_nodes,
+            "total_time_ms": round(total_time_ms, 2),
+            "network_calls": result.request_count,
+            "total_network_ms": round(result.network_ms, 2),
+            "total_serialization_ms": round(result.server_serialization_ms, 2),
+            "total_deserialization_ms": round(result.client_deserialization_ms, 2),
+            "failed_nodes": [],
         }
     })
 
 
 @app.route("/api/query/eager")
 def api_eager():
-    country = request.args.get("country", "United Kingdom")
-    limit = request.args.get("limit", 50, type=int)
+    global current_latency
+    start = time.perf_counter()
+    result = run_eager_query(latency_ms=current_latency)
+    total_time_ms = (time.perf_counter() - start) * 1000
 
-    result = eager_load(coordinator, country=country, limit=limit)
+    # Sort authors alphabetically to ensure order matches between Lazy and Eager
+    sorted_authors = sorted(result.data, key=lambda x: x.get("name", ""))
 
     return jsonify({
-        "authors": result.data[:20],
+        "authors": sorted_authors,
         "stats": {
             "total_authors": len(result.data),
-            "total_time_ms": round(result.total_time_ms, 2),
-            "network_calls": result.network_calls,
-            "total_network_ms": round(result.total_network_ms, 2),
-            "total_serialization_ms": round(result.total_serialization_ms, 2),
-            "total_deserialization_ms": round(result.total_deserialization_ms, 2),
-            "failed_nodes": result.failed_nodes,
+            "total_time_ms": round(total_time_ms, 2),
+            "network_calls": result.request_count,
+            "total_network_ms": round(result.network_ms, 2),
+            "total_serialization_ms": round(result.server_serialization_ms, 2),
+            "total_deserialization_ms": round(result.client_deserialization_ms, 2),
+            "failed_nodes": [],
         }
     })
 
 
 @app.route("/api/set_latency", methods=["POST"])
 def api_set_latency():
+    global current_latency
     data = request.get_json()
-    latency = data.get("latency_ms", 0)
-    coordinator.set_latency(latency)
-    return jsonify({"latency_ms": latency})
+    current_latency = data.get("latency_ms", 0)
+    return jsonify({"latency_ms": current_latency})
 
 
 @app.route("/api/benchmark_results")
