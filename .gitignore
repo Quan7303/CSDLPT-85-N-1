@@ -1,0 +1,22 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Project specifics
+nodes/*.db
+nodes/*.db-journal
+results/*.png
+results/*.json
+*.log

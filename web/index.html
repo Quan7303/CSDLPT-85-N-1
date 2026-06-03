@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N+1 Query Problem - Distributed ORM Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>N+1 Query Problem in Distributed ORM</h1>
+        <p class="subtitle">Goodreads Dataset | Author-Books | Lazy vs Eager Loading</p>
+    </header>
+
+    <nav>
+        <button class="tab active" data-tab="overview">System Overview</button>
+        <button class="tab" data-tab="query">Query Comparison</button>
+        <button class="tab" data-tab="benchmark">Benchmark Results</button>
+    </nav>
+
+    <main>
+        <section id="overview" class="panel active">
+            <h2>Distributed System Architecture</h2>
+            <div class="node-grid" id="node-grid"></div>
+            <div class="info-box">
+                <h3>Fragmentation Strategy</h3>
+                <p>Horizontal Range Fragmentation by Author name initial letter</p>
+                <ul>
+                    <li><strong>Node A</strong>: Authors A-H (e.g., Agatha Christie, C.S. Lewis)</li>
+                    <li><strong>Node B</strong>: Authors I-P (e.g., J.K. Rowling, Neil Gaiman)</li>
+                    <li><strong>Node C</strong>: Authors Q-Z (e.g., Stephen King, Terry Pratchett)</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="query" class="panel">
+            <h2>Lazy vs Eager Loading Comparison</h2>
+            <div class="controls">
+                <label>Country:
+                    <select id="country-select">
+                        <option value="United Kingdom" selected>United Kingdom</option>
+                        <option value="United States">United States</option>
+                        <option value="">All Countries</option>
+                    </select>
+                </label>
+                <label>Limit:
+                    <input type="number" id="limit-input" value="50" min="1" max="300">
+                </label>
+                <label>Simulated Latency (ms):
+                    <select id="latency-select">
+                        <option value="0">0ms</option>
+                        <option value="10">10ms</option>
+                        <option value="20">20ms</option>
+                        <option value="50" selected>50ms</option>
+                        <option value="100">100ms</option>
+                        <option value="200">200ms</option>
+                    </select>
+                </label>
+                <button id="run-query" class="btn-primary">Run Comparison</button>
+            </div>
+
+            <div class="comparison-grid">
+                <div class="result-card" id="lazy-result">
+                    <h3>Lazy Loading (N+1 Problem)</h3>
+                    <div class="stats" id="lazy-stats">Click "Run Comparison" to start</div>
+                    <div class="author-list" id="lazy-authors"></div>
+                </div>
+                <div class="result-card" id="eager-result">
+                    <h3>Eager Loading (Batch JOIN)</h3>
+                    <div class="stats" id="eager-stats">Click "Run Comparison" to start</div>
+                    <div class="author-list" id="eager-authors"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="benchmark" class="panel">
+            <h2>Benchmark Results</h2>
+            <div id="benchmark-chart"></div>
+            <div id="benchmark-table"></div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
