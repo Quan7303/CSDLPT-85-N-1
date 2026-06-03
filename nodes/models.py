@@ -1,13 +1,6 @@
-import json
-import time
 import datetime
 from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey, DateTime
 from sqlalchemy.orm import relationship, declarative_base
-
-try:
-    import msgpack
-except ImportError:
-    msgpack = None
 
 Base = declarative_base()
 
@@ -40,26 +33,6 @@ class Author(Base):
         if include_books:
             result['books'] = [b.to_dict() for b in self.books]
         return result
-
-    @staticmethod
-    def serialize(data: dict, fmt: str = "json") -> tuple:
-        start = time.perf_counter()
-        if fmt == "msgpack" and msgpack:
-            raw = msgpack.packb(data, use_bin_type=True)
-        else:
-            raw = json.dumps(data).encode('utf-8')
-        elapsed = (time.perf_counter() - start) * 1000
-        return raw, elapsed
-
-    @staticmethod
-    def deserialize(raw: bytes, fmt: str = "json") -> tuple:
-        start = time.perf_counter()
-        if fmt == "msgpack" and msgpack:
-            data = msgpack.unpackb(raw, raw=False)
-        else:
-            data = json.loads(raw)
-        elapsed = (time.perf_counter() - start) * 1000
-        return data, elapsed
 
 
 class Book(Base):
