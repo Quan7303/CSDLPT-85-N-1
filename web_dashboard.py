@@ -57,8 +57,12 @@ def api_overview():
 @app.route("/api/query/lazy")
 def api_lazy():
     global current_latency
+    country = request.args.get('country', 'United Kingdom')
+    if country == 'ALL': country = ""
+    limit = request.args.get('limit', default=50, type=int)
+
     start = time.perf_counter()
-    result = run_lazy_query(latency_ms=current_latency)
+    result = run_lazy_query(latency_ms=current_latency, country=country, limit=limit)
     total_time_ms = (time.perf_counter() - start) * 1000
 
     # Sort authors alphabetically to ensure order matches between Lazy and Eager
@@ -81,8 +85,12 @@ def api_lazy():
 @app.route("/api/query/eager")
 def api_eager():
     global current_latency
+    country = request.args.get('country', 'United Kingdom')
+    if country == 'ALL': country = ""
+    limit = request.args.get('limit', default=50, type=int)
+
     start = time.perf_counter()
-    result = run_eager_query(latency_ms=current_latency)
+    result = run_eager_query(latency_ms=current_latency, country=country, limit=limit)
     total_time_ms = (time.perf_counter() - start) * 1000
 
     # Sort authors alphabetically to ensure order matches between Lazy and Eager

@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey, DateTime, Date
 from sqlalchemy.orm import relationship, declarative_base
 
 Base = declarative_base()
@@ -48,6 +48,7 @@ class Book(Base):
     num_pages = Column(Integer)
     genres = Column(String(500))
     publication_info = Column(String(500))
+    publication_date = Column(Date, index=True)
     description = Column(Text)
     cover_image_uri = Column(String(500))
     created_at = Column(DateTime, default=lambda: datetime.datetime.now(datetime.UTC))
@@ -65,6 +66,7 @@ class Book(Base):
             'num_pages': self.num_pages,
             'genres': self.genres,
             'publication_info': self.publication_info,
+            'publication_date': self.publication_date.isoformat() if self.publication_date else None,
             'description': self.description,
             'cover_image_uri': self.cover_image_uri,
             'created_at': self.created_at.isoformat() if self.created_at else None,

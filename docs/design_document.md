@@ -30,7 +30,7 @@ Mọi đối tượng đều có một **OID dựa trên UUID (v4)** – đóng 
 ### Trạng thái & Phức hợp đối tượng (§ 15.1.3)
 ```
 Author = ⟨OID, state={name, country, author_link, birth_year, created_at}, books=[Book]⟩
-Book   = ⟨OID, state={title, average_rating, num_ratings, num_reviews, num_pages, genres, publication_info, description, cover_image_uri, created_at}, author_oid⟩
+Book   = ⟨OID, state={title, average_rating, num_ratings, num_reviews, num_pages, genres, publication_info, publication_date, description, cover_image_uri, created_at}, author_oid⟩
 ```
 
 `Author` là một **đối tượng phức hợp (composite object)** chứa một tập hợp các đối tượng `Book` thông qua chia sẻ tham chiếu (khóa ngoại `author_oid`). Mối quan hệ phức hợp này là chìa khóa của vấn đề N+1: việc truy cập vào các `Book` lồng nhau yêu cầu các truy vấn bổ sung nếu không nạp trước.

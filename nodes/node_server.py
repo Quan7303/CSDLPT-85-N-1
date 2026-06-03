@@ -113,7 +113,7 @@ def get_author_books(oid):
         books = (
             session.query(Book)
             .filter(Book.author_oid == oid)
-            .order_by(Book.created_at.desc())
+            .order_by(Book.publication_date.desc())
             .limit(limit)
             .all()
         )
@@ -148,7 +148,7 @@ def get_authors_with_books():
         if country:
             query = query.filter(Author.country == country)
 
-        query = query.order_by(Author.oid, Book.created_at.desc())
+        query = query.order_by(Author.oid, Book.publication_date.desc())
         rows = query.all()
 
         ser_start = time.perf_counter()

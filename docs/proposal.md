@@ -26,7 +26,7 @@
   - Tự động sinh thêm 2 trường dữ liệu giả lập (Synthetic Data) là `country` (Quốc gia) và `birth_year` (Năm sinh) để gia tăng độ phức tạp cho mô hình thực tế.
 - **Schema:**
   - `Author`: OID (UUID), name, country, author_link, birth_year, created_at
-  - `Book`: OID (UUID), author_oid (FK), title, average_rating, num_ratings, num_reviews, num_pages, genres, publication_info, description, cover_image_uri, created_at
+  - `Book`: OID (UUID), author_oid (FK), title, average_rating, num_ratings, num_reviews, num_pages, genres, publication_info, publication_date, description, cover_image_uri, created_at
 - **Fragmentation Strategy:** Horizontal Range Partitioning trên trường `name` của Author.
   - Node A: `[A-H]`, Node B: `[I-P]`, Node C: `[Q-Z]`. Các đối tượng Sách được phân mảnh dẫn xuất (Derived Fragmentation) theo OID của Tác giả.
 

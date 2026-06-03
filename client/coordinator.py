@@ -88,17 +88,19 @@ class Coordinator:
 
         return []
 
-    def get_all_authors_uk(self, latency_ms: int = 0,
-                           result: QueryResult = None) -> list:
+    def get_all_authors(self, latency_ms: int = 0, result: QueryResult = None, country: str = "") -> list:
         if result is None:
             result = QueryResult()
-
+        
         all_authors = []
         headers = self._build_headers(latency_ms)
         for node_url in self.node_urls:
+            params = {}
+            if country:
+                params['country'] = country
             authors = self._timed_request(
                 'GET', f"{node_url}/authors",
-                result, headers=headers, params={'country': 'United Kingdom'}
+                result, headers=headers, params=params
             )
             all_authors.extend(authors)
         result.data = all_authors

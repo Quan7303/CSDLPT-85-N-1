@@ -3,8 +3,10 @@ import sys
 import uuid
 import random
 import ast
+import re
 import datetime
 import pandas as pd
+from dateutil import parser
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -104,6 +106,22 @@ def parse_publication_info(raw):
     except (ValueError, SyntaxError):
         return str(raw)[:500]
 
+def parse_publication_date(raw):
+    pub_str = parse_publication_info(raw)
+    if not pub_str:
+        return None
+    # Tìm kiếm các mẫu ngày tháng dạng "July 16, 2005" hoặc "1997"
+    # Lấy substring sau chữ "published " nếu có
+    match = re.search(r'published\s+([A-Za-z]+\s+\d{1,2},\s+\d{4}|\d{4})', pub_str, re.IGNORECASE)
+    date_str = match.group(1) if match else pub_str
+    
+    try:
+        # fuzzy=True giúp tự động nhặt ngày tháng trong mớ text lộn xộn
+        dt = parser.parse(date_str, fuzzy=True)
+        return dt.date()
+    except (ValueError, OverflowError):
+        return None
+
 
 def parse_int_safe(val):
     if pd.isna(val):
@@ -185,6 +203,7 @@ def main():
                 'num_pages': parse_num_pages(row.get('num_pages')),
                 'genres': parse_genres(row.get('genres')),
                 'publication_info': parse_publication_info(row.get('publication_info')),
+                'publication_date': parse_publication_date(row.get('publication_info')),
                 'description': str(row.get('book_details', ''))[:2000] if pd.notna(row.get('book_details')) else None,
                 'cover_image_uri': str(row.get('cover_image_uri', ''))[:500] if pd.notna(row.get('cover_image_uri')) else None,
                 'node_index': get_node_index(author_name),
@@ -243,6 +262,7 @@ def main():
                 num_pages=b['num_pages'],
                 genres=b['genres'],
                 publication_info=b['publication_info'],
+                publication_date=b['publication_date'],
                 description=b['description'],
                 cover_image_uri=b['cover_image_uri'],
                 created_at=datetime.datetime.utcnow(),
