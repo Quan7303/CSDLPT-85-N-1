@@ -21,7 +21,12 @@ class QueryResult:
 
     @property
     def total_rehydration_ms(self):
-        return self.network_ms + self.server_serialization_ms + self.client_deserialization_ms
+        # Rehydration/Serialization theory (Chapter 15.4.2)
+        return self.server_serialization_ms + self.client_deserialization_ms
+
+    @property
+    def total_response_ms(self):
+        return self.network_ms + self.total_rehydration_ms
 
     def to_dict(self):
         return {
@@ -31,6 +36,7 @@ class QueryResult:
             "server_serialization_ms": round(self.server_serialization_ms, 2),
             "client_deserialization_ms": round(self.client_deserialization_ms, 2),
             "total_rehydration_ms": round(self.total_rehydration_ms, 2),
+            "total_response_ms": round(self.total_response_ms, 2),
         }
 
 class Coordinator:

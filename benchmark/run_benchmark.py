@@ -35,11 +35,11 @@ def run_benchmark():
         for it in range(iterations):
 
             eager_result = run_eager_query(latency_ms=latency)
-            eager_times.append(eager_result.total_rehydration_ms)
+            eager_times.append(eager_result.total_response_ms)
             eager_breakdowns.append(eager_result.to_dict())
 
             lazy_result = run_lazy_query(latency_ms=latency)
-            lazy_times.append(lazy_result.total_rehydration_ms)
+            lazy_times.append(lazy_result.total_response_ms)
             lazy_breakdowns.append(lazy_result.to_dict())
 
         eager_mean = statistics.mean(eager_times)

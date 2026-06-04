@@ -40,7 +40,7 @@ def print_query_details(result, label=""):
     print(f"       Tuần tự hóa (Serialization):  {t['server_serialization_ms']:>10.1f} ms")
     print(f"       Giải tuần tự hóa (Deser):     {t['client_deserialization_ms']:>10.1f} ms")
     print(f"       ────────────────────────────────────────")
-    print(f"       TỔNG CỘNG:                    {t['total_rehydration_ms']:>10.1f} ms")
+    print(f"       TỔNG CỘNG:                    {t['total_response_ms']:>10.1f} ms")
     print(f"       Số lượt HTTP requests:        {t['request_count']:>10d}")
     print(f"       Số tác giả tìm thấy:          {t['author_count']:>10d}")
 
@@ -147,7 +147,7 @@ def demo():
     ├─────────────────────────────┼──────────────┼──────────────┤
     │ Số tác giả                  │ {count_before:>12d} │ {count_after:>12d} │
     │ HTTP requests               │ {t_before['request_count']:>12d} │ {t_after['request_count']:>12d} │
-    │ Tổng thời gian (ms)         │ {t_before['total_rehydration_ms']:>12.1f} │ {t_after['total_rehydration_ms']:>12.1f} │
+    │ Tổng thời gian (ms)         │ {t_before['total_response_ms']:>12.1f} │ {t_after['total_response_ms']:>12.1f} │
     │ Network I/O (ms)            │ {t_before['network_ms']:>12.1f} │ {t_after['network_ms']:>12.1f} │
     └─────────────────────────────┴──────────────┴──────────────┘
 
